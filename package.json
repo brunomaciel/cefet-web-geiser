@@ -1,0 +1,33 @@
+{
+  "name": "cefet-web-geiser",
+  "version": "1.0.0",
+  "description": "exercício de web",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brunomaciel/cefet-web-geiser.git"
+  },
+  "keywords": [
+    "geiser"
+  ],
+  "author": "Bruno Maciel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brunomaciel/cefet-web-geiser/issues"
+  },
+  "homepage": "https://github.com/brunomaciel/cefet-web-geiser#readme",
+  "dependencies": {
+    "express": "^4.15.2",
+    "hbs": "^4.0.1",
+    "underscore": "^1.8.3"
+  },
+  "dependencies": {
+        "express": "latest"
+    }
+}
