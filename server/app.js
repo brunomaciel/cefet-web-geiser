@@ -1,4 +1,5 @@
 let express = require('express'),
+     _ = require('underscore'),
     app = express();
 
 // carregar "banco de dados" (data/jogadores.json e data/jogosPorJogador.json)
@@ -9,8 +10,6 @@ var db = {
   jogadores: JSON.parse(fs.readFileSync(__dirname+'/data/jogadores.json'),'utf8'),
   jogosPorJogador: JSON.parse(fs.readFileSync(__dirname+'/data/jogosPorJogador.json'),'utf8')
 };
-
-console.log(db.jogadores);
 
 // configurar qual templating engine usar. Sugestão: hbs (handlebars)
 app.set('view engine', 'hbs');
@@ -34,6 +33,43 @@ app.get('/', function(request, response) {
 // jogador, usando os dados do banco de dados "data/jogadores.json" e
 // "data/jogosPorJogador.json", assim como alguns campos calculados
 // dica: o handler desta função pode chegar a ter umas 15 linhas de código
+app.get('/jogador/:steamid', function(request, response) {
+  let jogador = _.find(db.jogadores.players, function(el) {
+    return el.steamid === request.params.steamid;
+  });
+
+  let jogosDoJogador = db.jogosPorJogador[request.params.steamid];
+
+  //Contando jogos jogados e não jogados
+  jogador.quantidadeJogos = jogosDoJogador.game_count;
+  let qtd=0;
+  jogosDoJogador.games.forEach(function(jogo){
+    if(jogo.playtime_forever === 0) qtd++;
+  });
+  jogador.numJogosNaoJogados = qtd;
+  jogador.numJogosJogados = jogador.quantidadeJogos - qtd;
+
+  //Ordenar decrescente por playtime_forever e pegar 5 primeiros (http://fegemo.github.io/cefet-web/classes/ssn4/#20)
+  let ordenadoDesc = _.sortBy(jogosDoJogador.games, function(el) {
+    return -el.playtime_forever;
+  });
+
+  let primeiros5 = _.first(ordenadoDesc, 5);
+  jogosDoJogador.games = primeiros5;
+
+  //Arredondando minutos para horas
+  jogosDoJogador.games.forEach(function(jogo){
+    jogo.playtime_forever = Math.round(jogo.playtime_forever/60);
+  });
+
+
+
+  response.render('jogador', {
+    player: jogador,
+    jogos: jogosDoJogador.games,
+    jogoFavorito: jogosDoJogador.games[0]
+  });
+});
 
 
 // EXERCÍCIO 1
