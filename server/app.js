@@ -2,6 +2,13 @@ let express = require('express'),
      _ = require('underscore'),
     app = express();
 
+let session = require('express-session');
+app.use(session({
+  secret: 'geiserbybmm',
+  resave: true,
+  saveUninitialized: true
+}));
+
 // carregar "banco de dados" (data/jogadores.json e data/jogosPorJogador.json)
 // você pode colocar o conteúdo dos arquivos json no objeto "db" logo abaixo
 // dica: 3-4 linhas de código (você deve usar o módulo de filesystem (fs))
@@ -22,9 +29,18 @@ app.set('views', 'server/views');
 // dica: o handler desta função é bem simples - basta passar para o template
 //       os dados do arquivo data/jogadores.json
 app.get('/', function(request, response) {
+
+  if (request.session.views) {  // contador de vis. nesta sessão
+    request.session.views++;
+  } else {
+    request.session.views = 1;
+  }
+
   response.render('index', {
-    jogadores: db.jogadores.players
+    jogadores: db.jogadores.players,
+    numSessoes: request.session.views
   });
+
 });
 
 
